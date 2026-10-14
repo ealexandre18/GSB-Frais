@@ -1,0 +1,132 @@
+{% extends "PgGsbFraisBundle::layout.html.twig" %}
+
+{% block menu %}
+<div id="menuGauche">
+    <div id="infosUtil">
+        <h3>
+            Administrateur :<br>
+            {{ app.session.get('prenom') }} {{ app.session.get('nom') }}
+        </h3>
+    </div>  
+    <ul id="menuList">
+        <li class="smenu">
+            <a href="{{ path('pg_gsb_frais_admin') }}" title="Gestion des comptes">Gestion Utilisateurs & Comptables</a>
+        </li>
+        <li class="smenu" style="background-color: #004080;">
+            <a href="{{ path('pg_gsb_frais_creercompte') }}" style="color: #ffffff; font-weight: bold;" title="Créer un nouveau compte utilisateur">Créer un compte</a>
+        </li>
+        <li class="smenu">
+            <a href="{{ path('pg_gsb_frais_deconnexion') }}" title="Se déconnecter">Déconnexion</a>
+        </li>
+    </ul>
+</div> 
+{% endblock %}
+
+{% block bloc1 %}
+<div id="contenu" style="padding: 20px 30px; font-family: Arial, Helvetica, sans-serif;">
+    <h2 style="color: #0055a5; border-bottom: 2px solid #0055a5; padding-bottom: 8px; margin-top: 0;">
+        Administration - Création d'un nouvel utilisateur
+    </h2>
+
+    {% if message %}
+        <div style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 12px 18px; border-radius: 4px; margin-bottom: 20px; font-weight: bold;">
+            ✓ {{ message }}
+            <div style="margin-top: 8px;">
+                <a href="{{ path('pg_gsb_frais_admin') }}" style="color: #0055a5; text-decoration: underline; font-size: 13px;">➔ Retourner à la liste des utilisateurs</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <div style="background: white; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 25px; max-width: 750px;">
+        <form method="POST" action="{{ path('pg_gsb_frais_creercompte') }}">
+            
+            <fieldset style="border: 1px solid #cce0f5; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px; background: #f8fbfe;">
+                <legend style="color: #0055a5; font-weight: bold; padding: 0 8px;">1. Type de compte</legend>
+                <div style="display: flex; gap: 30px; margin-top: 5px;">
+                    <label style="cursor: pointer; font-weight: bold; color: #333;">
+                        <input type="radio" name="type_compte" value="visiteur" checked onchange="toggleVisiteurFields(true)">
+                        👤 Visiteur Médical
+                    </label>
+                    <label style="cursor: pointer; font-weight: bold; color: #333;">
+                        <input type="radio" name="type_compte" value="comptable" onchange="toggleVisiteurFields(false)">
+                        💼 Agent Comptable
+                    </label>
+                </div>
+            </fieldset>
+
+            <fieldset style="border: 1px solid #ddd; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px;">
+                <legend style="color: #333; font-weight: bold; padding: 0 8px;">2. Identité & Connexion</legend>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Nom *</label>
+                        <input type="text" name="nom" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="ex: Dupont">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Prénom *</label>
+                        <input type="text" name="prenom" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="ex: Jean">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Login de connexion *</label>
+                        <input type="text" name="login" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="ex: jdupont">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Mot de passe initial *</label>
+                        <input type="password" name="mdp" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="Mot de passe">
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset id="champsVisiteur" style="border: 1px solid #ddd; padding: 15px 20px; border-radius: 5px; margin-bottom: 25px;">
+                <legend style="color: #333; font-weight: bold; padding: 0 8px;">3. Coordonnées & Barème Visiteur</legend>
+                
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Adresse</label>
+                    <input type="text" name="adresse" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="ex: 12 rue des Fleurs">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Code Postal</label>
+                        <input type="text" name="cp" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="ex: 69002">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Ville</label>
+                        <input type="text" name="ville" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" placeholder="ex: Lyon">
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Véhicule de fonction & Barème kilométrique</label>
+                    <select name="id_vehicule" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                        <option value="1">Véhicule 4CV Diesel (0.52 € / km)</option>
+                        <option value="2">Véhicule 5/6CV Diesel (0.58 € / km)</option>
+                        <option value="3" selected>Véhicule 4CV Essence (0.62 € / km)</option>
+                        <option value="4">Véhicule 5/6CV Essence (0.67 € / km)</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <input type="submit" value="Enregistrer et Créer le compte" style="background-color: #0055a5; color: white; border: none; padding: 10px 22px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                <a href="{{ path('pg_gsb_frais_admin') }}" style="color: #666; text-decoration: none; font-size: 14px;">Annuler</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleVisiteurFields(isVisiteur) {
+    var block = document.getElementById('champsVisiteur');
+    if (isVisiteur) {
+        block.style.display = 'block';
+    } else {
+        block.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

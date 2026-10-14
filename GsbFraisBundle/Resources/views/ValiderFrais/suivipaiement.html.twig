@@ -1,0 +1,110 @@
+{% extends "PgGsbFraisBundle::accueil.html.twig" %}
+
+{% block bloc1 %}
+<div id="contenu">
+    <h2>Suivi du paiement des fiches de frais</h2>
+
+    {% if message %}
+        <div style="padding: 10px 15px; margin-bottom: 15px; border-radius: 4px; font-weight: bold;
+            {% if messageType == 'success' %} background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+            {% elseif messageType == 'error' %} background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
+            {% elseif messageType == 'warning' %} background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba;
+            {% else %} background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; {% endif %}">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    <!-- Filtre par mois -->
+    <form action="{{ path('pg_gsb_frais_suivipaiement') }}" method="GET" style="margin-bottom: 20px;">
+        <input type="hidden" name="route" value="suivipaiement" />
+        <div class="corpsForm">
+            <fieldset>
+                <legend>Filtrer par mois</legend>
+                <p>
+                    <label for="lstMois">Mois de la fiche : </label>
+                    <select id="lstMois" name="lstMois" style="width: 200px; padding: 4px;" onchange="this.form.submit()">
+                        <option value="">-- Tous les mois --</option>
+                        {% for unMois in lesmois %}
+                            <option value="{{ unMois.mois }}" {% if unMois.mois == lemois %}selected{% endif %}>
+                                {{ unMois.numMois }}/{{ unMois.numAnnee }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <noscript><input type="submit" value="Filtrer" /></noscript>
+                </p>
+            </fieldset>
+        </div>
+    </form>
+
+    <!-- Tableau des fiches à payer / payées -->
+    <table class="listeLegere" style="width: 100%; margin-top: 15px;">
+        <caption>Fiches validées et état de mise en paiement</caption>
+        <tr>
+            <th>Visiteur</th>
+            <th>Mois</th>
+            <th>Justificatifs</th>
+            <th>Montant à rembourser</th>
+            <th>Date modif</th>
+            <th>État actuel</th>
+            <th>Action Paiement</th>
+            <th>PDF</th>
+        </tr>
+        {% if lesfiches|length > 0 %}
+            {% for uneFiche in lesfiches %}
+                {% set idVis = uneFiche.idvisiteur %}
+                {% set moisFiche = uneFiche.mois %}
+                {% set montant = uneFiche.montantvalide|default('0.00') %}
+                {% set etat = uneFiche.idetat %}
+                {% set libEtat = uneFiche.libetat %}
+                
+                <tr {% if etat == 'RB' %}style="background-color: #f0fff4;"{% endif %}>
+                    <td><strong>{{ uneFiche.nom }}</strong> {{ uneFiche.prenom }} <small style="color: #666;">({{ idVis }})</small></td>
+                    <td>{{ moisFiche|slice(4,2) }}/{{ moisFiche|slice(0,4) }}</td>
+                    <td style="text-align: center;">{{ uneFiche.nbjustificatifs|default(0) }}</td>
+                    <td style="font-weight: bold; color: #0055A5;">{{ montant }} €</td>
+                    <td>{{ uneFiche.datemodif|slice(0,10) }}</td>
+                    <td>
+                        {% if etat == 'VA' %}
+                            <span style="background-color: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 11px;">
+                                🟡 Validée (Mise en paiement)
+                            </span>
+                        {% elseif etat == 'RB' %}
+                            <span style="background-color: #d4edda; color: #155724; padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 11px;">
+                                🟢 Remboursée
+                            </span>
+                        {% else %}
+                            <span style="color: #666;">{{ libEtat }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">
+                        {% if etat == 'VA' %}
+                            <form action="{{ path('pg_gsb_frais_suivipaiement') }}" method="POST" onsubmit="return confirm('Confirmer le virement et passer la fiche à l\'état Remboursée ?');" style="margin: 0;">
+                                <input type="hidden" name="idVisiteur" value="{{ idVis }}" />
+                                <input type="hidden" name="mois" value="{{ moisFiche }}" />
+                                <input type="hidden" name="lstMois" value="{{ lemois }}" />
+                                <input type="hidden" name="action" value="mettreEnPaiement" />
+                                <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">
+                                    💳 Marquer Remboursée
+                                </button>
+                            </form>
+                        {% else %}
+                            <span style="color: #28a745; font-size: 11px; font-weight: bold;">✓ Virement effectué</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">
+                        <a href="{{ path('pg_gsb_frais_genererpdf', {'idVisiteur': idVis, 'mois': moisFiche}) }}" target="_blank" style="display: inline-block; padding: 3px 8px; background-color: #0055A5; color: white; border-radius: 3px; text-decoration: none; font-size: 11px; font-weight: bold;">
+                            📄 PDF
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="8" style="text-align: center; color: #888; padding: 20px;">
+                    Aucune fiche validée ou remboursée pour cette sélection.
+                </td>
+            </tr>
+        {% endif %}
+    </table>
+</div>
+{% endblock %}

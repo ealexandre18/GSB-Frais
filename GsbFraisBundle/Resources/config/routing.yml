@@ -1,0 +1,38 @@
+pg_gsb_frais_home:
+    pattern:  /accueil
+    defaults: { _controller: PgGsbFraisBundle:Home:index } 
+pg_gsb_frais_validerconnexion:
+    pattern:  /validerconnexion
+    defaults: { _controller: PgGsbFraisBundle:Home:validerconnexion } 
+pg_gsb_frais_deconnexion:
+    pattern:  /deconnexion
+    defaults: { _controller: PgGsbFraisBundle:Home:deconnexion } 
+pg_gsb_frais_listefrais:
+    pattern:  /listefrais
+    defaults: { _controller: PgGsbFraisBundle:ListeFrais:index } 
+pg_gsb_frais_saisirfrais:
+    pattern:  /saisirfrais
+    defaults: { _controller: PgGsbFraisBundle:SaisirFrais:index } 
+pg_gsb_frais_validerfraishorsforfais:
+    pattern:  /validerfraishorsforfait
+    defaults: { _controller: PgGsbFraisBundle:SaisirFrais:validerfraishorsforfait }
+pg_gsb_frais_supprimerfraishorsforfait:
+    pattern:  /supprimerfraishorsforfait/{id}
+    defaults: { _controller: PgGsbFraisBundle:SaisirFrais:supprimerfraishorsforfait }
+pg_gsb_frais_genererpdf:
+    pattern:  /genererpdf
+    defaults: { _controller: PgGsbFraisBundle:ListeFrais:genererpdf }
+pg_gsb_frais_genererpdf_mois:
+    pattern:  /genererpdf_mois
+    defaults: { _controller: PgGsbFraisBundle:ListeFrais:genererpdfmois }
+pg_gsb_frais_validerfrais:
+    pattern:  /validerfrais
+    defaults: { _controller: PgGsbFraisBundle:ValiderFrais:index }
+pg_gsb_frais_ajouterjustificatif:
+    pattern:  /ajouterjustificatif
+    defaults: { _controller: PgGsbFraisBundle:SaisirFrais:ajouterjustificatif }
+pg_gsb_frais_suivipaiement:
+    pattern:  /suivipaiement
+    defaults: { _controller: PgGsbFraisBundle:ValiderFrais:suivipaiement }
+
+

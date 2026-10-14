@@ -1,0 +1,155 @@
+{% extends "PgGsbFraisBundle::layout.html.twig" %}
+
+{% block menu %}
+<div id="menuGauche">
+    <div id="infosUtil">
+        <h3>
+            Administrateur :<br>
+            {{ app.session.get('prenom') }} {{ app.session.get('nom') }}
+        </h3>
+    </div>  
+    <ul id="menuList">
+        <li class="smenu" style="background-color: #004080;">
+            <a href="{{ path('pg_gsb_frais_admin') }}" style="color: #ffffff; font-weight: bold;" title="Gestion des comptes">Gestion Utilisateurs & Comptables</a>
+        </li>
+        <li class="smenu">
+            <a href="{{ path('pg_gsb_frais_creercompte') }}" title="Créer un nouveau compte utilisateur">Créer un compte</a>
+        </li>
+        <li class="smenu">
+            <a href="{{ path('pg_gsb_frais_deconnexion') }}" title="Se déconnecter">Déconnexion</a>
+        </li>
+    </ul>
+</div> 
+{% endblock %}
+
+{% block bloc1 %}
+<div id="contenu" style="padding: 20px 30px; font-family: Arial, Helvetica, sans-serif;">
+    <h2 style="color: #0055a5; border-bottom: 2px solid #0055a5; padding-bottom: 8px; margin-top: 0;">
+        Administration - Gestion des utilisateurs et des comptables
+    </h2>
+
+    {% if messageFlash %}
+        <div style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 12px 18px; border-radius: 4px; margin: 15px 0; font-weight: bold;">
+            ✓ {{ messageFlash }}
+        </div>
+    {% endif %}
+
+    <!-- Statistiques rapides -->
+    <div style="display: flex; gap: 20px; margin: 20px 0;">
+        <div style="flex: 1; background: #e8f4fd; border-left: 5px solid #0055a5; padding: 12px 18px; border-radius: 4px;">
+            <span style="font-size: 13px; color: #555;">Visiteurs médicaux actifs</span>
+            <div style="font-size: 22px; font-weight: bold; color: #0055a5; margin-top: 4px;">{{ lesVisiteurs|length }} utilisateurs</div>
+        </div>
+        <div style="flex: 1; background: #eafaf1; border-left: 5px solid #28a745; padding: 12px 18px; border-radius: 4px;">
+            <span style="font-size: 13px; color: #555;">Agents comptables habilités</span>
+            <div style="font-size: 22px; font-weight: bold; color: #28a745; margin-top: 4px;">{{ lesComptables|length }} comptables</div>
+        </div>
+        <div style="flex: 1; background: #fff8e7; border-left: 5px solid #ffc107; padding: 12px 18px; border-radius: 4px;">
+            <span style="font-size: 13px; color: #555;">Contrôle des accès & Rôles</span>
+            <div style="font-size: 22px; font-weight: bold; color: #d39e00; margin-top: 4px;">Système sécurisé</div>
+        </div>
+    </div>
+
+    <!-- Section 1 : Visiteurs Médicaux -->
+    <div style="margin-top: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="color: #333; margin: 0; font-size: 16px;">👥 Liste des Visiteurs Médicaux</h3>
+            <a href="{{ path('pg_gsb_frais_creercompte') }}" style="background: #0055a5; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block;">
+                + Nouveau visiteur
+            </a>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-size: 13px;">
+            <thead>
+                <tr style="background: #0055a5; color: white; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">ID</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Nom</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Prénom</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Login</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">CP / Ville</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Date embauche</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Statut</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in lesVisiteurs %}
+                <tr style="border-bottom: 1px solid #eee; {% if loop.index is odd %}background: #fafafa;{% endif %}">
+                    <td style="padding: 8px 10px; font-weight: bold; color: #555;">{{ v.id }}</td>
+                    <td style="padding: 8px 10px; font-weight: bold;">{{ v.nom }}</td>
+                    <td style="padding: 8px 10px;">{{ v.prenom }}</td>
+                    <td style="padding: 8px 10px; font-family: monospace; color: #0055a5;">{{ v.login }}</td>
+                    <td style="padding: 8px 10px;">{{ v.cp }} {{ v.ville }}</td>
+                    <td style="padding: 8px 10px;">{{ v.dateembauche }}</td>
+                    <td style="padding: 8px 10px; text-align: center;">
+                        {% if v.statut == 'Désactivé' %}
+                            <span style="background: #f8d7da; color: #721c24; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">Désactivé</span>
+                        {% else %}
+                            <span style="background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">Actif</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 8px 10px; text-align: center; white-space: nowrap;">
+                        <a href="{{ path('pg_gsb_frais_modifiercompte', {'type': 'visiteur', 'id': v.id}) }}" style="background: #17a2b8; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block; margin-right: 4px;">Modifier</a>
+                        <a href="{{ path('pg_gsb_frais_reinitmdp', {'type': 'visiteur', 'id': v.id}) }}" onclick="return confirm('Réinitialiser le mot de passe de {{ v.prenom }} {{ v.nom }} à « secret » ?');" style="background: #ffc107; color: #212529; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block; margin-right: 4px; font-weight: bold;">Réinit MDP</a>
+                        {% if v.statut == 'Désactivé' %}
+                            <a href="{{ path('pg_gsb_frais_togglestatut', {'type': 'visiteur', 'id': v.id}) }}" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block;">Activer</a>
+                        {% else %}
+                            <a href="{{ path('pg_gsb_frais_togglestatut', {'type': 'visiteur', 'id': v.id}) }}" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block;">Désactiver</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Section 2 : Agents Comptables -->
+    <div style="margin-top: 35px; margin-bottom: 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="color: #333; margin: 0; font-size: 16px;">💼 Liste des Agents Comptables</h3>
+            <a href="{{ path('pg_gsb_frais_creercompte') }}" style="background: #28a745; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block;">
+                + Nouveau comptable
+            </a>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-size: 13px;">
+            <thead>
+                <tr style="background: #28a745; color: white; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">ID</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Nom</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Prénom</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Login</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Rôle</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Statut</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in lesComptables %}
+                <tr style="border-bottom: 1px solid #eee; {% if loop.index is odd %}background: #fafafa;{% endif %}">
+                    <td style="padding: 8px 10px; font-weight: bold; color: #555;">{{ c.id }}</td>
+                    <td style="padding: 8px 10px; font-weight: bold;">{{ c.nom }}</td>
+                    <td style="padding: 8px 10px;">{{ c.prenom }}</td>
+                    <td style="padding: 8px 10px; font-family: monospace; color: #28a745;">{{ c.login }}</td>
+                    <td style="padding: 8px 10px;">Comptable (Validation fiches & Paiement)</td>
+                    <td style="padding: 8px 10px; text-align: center;">
+                        {% if c.statut == 'Révoqué' %}
+                            <span style="background: #f8d7da; color: #721c24; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">Révoqué</span>
+                        {% else %}
+                            <span style="background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">Habilité</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 8px 10px; text-align: center; white-space: nowrap;">
+                        <a href="{{ path('pg_gsb_frais_modifiercompte', {'type': 'comptable', 'id': c.id}) }}" style="background: #17a2b8; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block; margin-right: 4px;">Modifier</a>
+                        <a href="{{ path('pg_gsb_frais_reinitmdp', {'type': 'comptable', 'id': c.id}) }}" onclick="return confirm('Réinitialiser le mot de passe de {{ c.prenom }} {{ c.nom }} à « secret » ?');" style="background: #ffc107; color: #212529; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block; margin-right: 4px; font-weight: bold;">Réinit MDP</a>
+                        {% if c.statut == 'Révoqué' %}
+                            <a href="{{ path('pg_gsb_frais_togglestatut', {'type': 'comptable', 'id': c.id}) }}" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block;">Habiliter</a>
+                        {% else %}
+                            <a href="{{ path('pg_gsb_frais_togglestatut', {'type': 'comptable', 'id': c.id}) }}" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none; display: inline-block;">Révoquer</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

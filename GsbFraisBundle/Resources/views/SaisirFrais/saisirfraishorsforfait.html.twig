@@ -1,0 +1,79 @@
+<div id="contenu">
+<table class="listeLegere">
+   <caption>Descriptif des éléments hors forfait</caption>
+   <tr>
+      <th class="date">Date</th>
+      <th class="libelle">Libellé</th>  
+      <th class="montant">Montant (€)</th>  
+      <th class="statut">Statut</th>
+      <th class="justificatif">Justificatif</th>
+      <th class="action">Action</th>              
+   </tr>
+   {% for unfrais in lesfraishorsforfait %}
+      {% set libelle = unfrais.libelle %}
+      {% set date = unfrais.date %}
+      {% set montant = unfrais.montant %}
+      {% set idfrais = unfrais.id %}
+      {% set justificatif = unfrais.justificatif_url|default(null) %}
+      {% set estRefuse = libelle starts with 'REFUSE :' or unfrais.statut|default('') == 'Refusé' %}
+      <tr {% if estRefuse %}style="background-color: #f8d7da; color: #721c24;"{% endif %}>
+         <td>{{ date }}</td>
+         <td>{{ libelle }}</td>
+         <td>{{ montant }} €</td>
+         <td>
+            {% if estRefuse %}
+               <span style="background-color: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 3px; font-weight: bold; font-size: 11px;">🔴 Refusé</span>
+            {% else %}
+               <span style="background-color: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 3px; font-weight: bold; font-size: 11px;">🟡 En attente</span>
+            {% endif %}
+         </td>
+         <td>
+            {% if justificatif %}
+               <a href="{{ asset('uploads/justificatifs/' ~ justificatif) }}" target="_blank" title="Voir le justificatif" style="color: #0055A5; font-weight: bold; text-decoration: none;">📄 Voir</a>
+            {% else %}
+               <form action="{{ path('pg_gsb_frais_ajouterjustificatif') }}" method="post" enctype="multipart/form-data" style="margin: 0;">
+                  <input type="hidden" name="idFrais" value="{{ idfrais }}" />
+                  <input type="file" name="justificatif" accept=".pdf,.png,.jpg,.jpeg" onchange="this.form.submit()" style="font-size: 11px;" />
+               </form>
+            {% endif %}
+         </td>
+         <td>
+            <a href="{{ path('pg_gsb_frais_supprimerfraishorsforfait', {'id' : idfrais}) }}" 
+               onclick="return confirm('Voulez-vous vraiment supprimer ce frais ?');" 
+               style="display: inline-block; padding: 4px 8px; background-color: #dc3545; color: white; border-radius: 3px; text-decoration: none; font-size: 11px;">
+               🗑️ Supprimer
+            </a>
+         </td>
+      </tr>
+   {% endfor %}                                           
+</table>
+
+<form action="{{ path('pg_gsb_frais_validerfraishorsforfait') }}" method="post" enctype="multipart/form-data">
+   <div class="corpsForm">
+      <fieldset>
+         <legend>Nouvel élément hors forfait</legend>
+         <p>
+            <label for="txtDateHF">Date (jj/mm/aaaa) : </label>
+            <input type="text" id="txtDateHF" name="dateFrais" size="10" maxlength="10" value="" placeholder="ex : 15/09/2026" />
+         </p>
+         <p>
+            <label for="txtLibelleHF">Libellé : </label>
+            <input type="text" id="txtLibelleHF" name="libelle" size="70" maxlength="256" value="" placeholder="Description de la dépense" />
+         </p>
+         <p>
+            <label for="txtMontantHF">Montant (en €) : </label>
+            <input type="text" id="txtMontantHF" name="montant" size="10" maxlength="10" value="" placeholder="ex : 45.50" />
+         </p>
+         <p>
+            <label for="fileJustificatif">Justificatif (PDF, JPG, PNG) : </label>
+            <input type="file" id="fileJustificatif" name="justificatif" accept=".pdf,.png,.jpg,.jpeg" />
+         </p>
+      </fieldset>
+   </div>
+   <div class="piedForm">
+      <p>
+         <input id="ajouter" type="submit" value="➕ Ajouter le frais" style="background-color: #0055A5; color: white; font-weight: bold; border: none; padding: 7px 16px; border-radius: 4px; cursor: pointer;" />
+      </p> 
+   </div>
+</form>
+</div>

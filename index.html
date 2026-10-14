@@ -1,0 +1,620 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GSB Frais â€” Ewan Alexandre | BTS SIO SLAM</title>
+  <meta name="description" content="Projet GSB Frais - Application web de gestion des frais de dÃ©placement pour le laboratoire Galaxy Swiss Bourdin (BTS SIO SLAM).">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: rgba(17, 24, 39, 0.85);
+      --bg-card-hover: rgba(30, 41, 59, 0.95);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --primary: #0284c7;
+      --primary-light: #38bdf8;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --success: #10b981;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(2, 132, 199, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(14, 165, 233, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    /* Navigation */
+    header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 15, 25, 0.75);
+    }
+
+    .nav-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .nav-back:hover {
+      color: var(--text-main);
+      border-color: var(--primary-light);
+      background: rgba(56, 189, 248, 0.1);
+      transform: translateX(-2px);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 60px 0 40px;
+      text-align: center;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: var(--primary-light);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-lead {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      max-width: 760px;
+      margin: 0 auto 24px;
+    }
+
+    .author-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .author-name {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    /* Deliverables Grid */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 40px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    .deliverables-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-bottom: 50px;
+    }
+
+    .deliverable-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .deliverable-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .deliverable-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .deliverable-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+
+    .badge-zip { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-report { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-guide { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-spec { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+
+    .card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .card-meta {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      margin-bottom: 24px;
+      flex-grow: 1;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #0369a1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0284c7, #075985);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Info Section */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .info-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary-light);
+    }
+
+    .info-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .info-list li {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .info-list li strong {
+      color: var(--text-main);
+    }
+
+    .bullet {
+      color: var(--primary-light);
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .credentials-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.85rem;
+    }
+
+    .credentials-table th, .credentials-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .credentials-table th {
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+    }
+
+    .credentials-table td code {
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--primary-light);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border-color);
+      padding: 30px 0;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--primary-light);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- En-tÃªte de navigation -->
+  <header>
+    <div class="container nav-content">
+      <a href="https://github.com/ealexandre18/GSB-Frais" class="nav-brand">
+        <span class="brand-badge">GSB</span>
+        <span>Galaxy Swiss Bourdin</span>
+      </a>
+      <a href="https://github.com/ealexandre18/GSB-Frais" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <span>Retour au portfolio</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- BanniÃ¨re principale -->
+  <main class="container">
+    <section class="hero">
+      <div class="hero-pill">
+        <span>âš¡ BTS SIO SLAM 2 â€¢ Atelier de Professionnalisation</span>
+      </div>
+      <h1>GSB Frais â€” Gestion des Frais</h1>
+      <p class="hero-lead">
+        Portail de mise Ã  disposition des livrables pour la modernisation de l'application web de gestion des frais de dÃ©placement des visiteurs mÃ©dicaux.
+      </p>
+      <div class="author-card">
+        <span>Ã‰tudiant : <span class="author-name">ALEXANDRE Ewan</span> (Groupe 1)</span>
+        <span>â€¢</span>
+        <span>Professeur : Mme BEAUVALLET</span>
+        <span>â€¢</span>
+        <span>Octobre 2026</span>
+      </div>
+    </section>
+
+    <!-- Livrables en tÃ©lÃ©chargement individuel -->
+    <h2 class="section-title">
+      <span>ðŸ“¦ Livrables Officiels (TÃ©lÃ©chargement Ã  la carte)</span>
+    </h2>
+
+    <div class="deliverables-grid">
+      
+      <!-- 1. Code source GsbFraisBundle.zip -->
+      <div class="deliverable-card">
+        <div>
+          <span class="card-badge badge-zip">Bundle Symfony (ZIP)</span>
+          <div class="card-icon">ðŸ“</div>
+          <h3 class="card-title">Projet GsbFraisBundle</h3>
+          <div class="card-meta">GsbFraisBundle.zip â€¢ ~45 Ko</div>
+          <p class="card-desc">
+            Archive ZIP contenant <strong>exclusivement le bundle Symfony applicatif</strong> (contrÃ´leurs, vues Twig, services PDO, routes et configurations). Tout document superflu ou fichier tiers a Ã©tÃ© retirÃ©.
+          </p>
+        </div>
+        <div class="card-actions">
+          <a href="livrables/GsbFraisBundle.zip" download class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>TÃ©lÃ©charger le Bundle (ZIP)</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. Compte Rendu -->
+      <div class="deliverable-card">
+        <div>
+          <span class="card-badge badge-report">Compte Rendu (PDF)</span>
+          <div class="card-icon">ðŸ“‘</div>
+          <h3 class="card-title">Compte Rendu de RÃ©alisation</h3>
+          <div class="card-meta">18 pages â€¢ Document PDF</div>
+          <p class="card-desc">
+            Rapport technique exhaustif dÃ©taillant l'architecture MVC, l'adaptation du rÃ´le comptable, les contrÃ´leurs de validation, les requÃªtes prÃ©parÃ©es et la configuration Supabase.
+          </p>
+        </div>
+        <div class="card-actions">
+          <a href="livrables/Compte_rendu_GSB_ALEXANDRE_EWAN_ATELIER.pdf" target="_blank" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>Consulter en ligne</span>
+          </a>
+          <a href="livrables/Compte_rendu_GSB_ALEXANDRE_EWAN_ATELIER.pdf" download class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>TÃ©lÃ©charger le PDF</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 3. Notice Utilisateur -->
+      <div class="deliverable-card">
+        <div>
+          <span class="card-badge badge-guide">Notice Utilisateur (PDF)</span>
+          <div class="card-icon">ðŸ“–</div>
+          <h3 class="card-title">Notice Utilisateur</h3>
+          <div class="card-meta">12 pages â€¢ Document PDF</div>
+          <p class="card-desc">
+            Guide d'utilisation pas Ã  pas de l'application Ã  destination des visiteurs mÃ©dicaux (saisie et suivi de fiche) et des comptables (validation et mise en paiement).
+          </p>
+        </div>
+        <div class="card-actions">
+          <a href="livrables/Notice_Utilisateur_GSB_ATELIER.pdf" target="_blank" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>Consulter en ligne</span>
+          </a>
+          <a href="livrables/Notice_Utilisateur_GSB_ATELIER.pdf" download class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>TÃ©lÃ©charger le PDF</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 4. Cahier des charges -->
+      <div class="deliverable-card">
+        <div>
+          <span class="card-badge badge-spec">Cahier des Charges (PDF)</span>
+          <div class="card-icon">ðŸ“‹</div>
+          <h3 class="card-title">Cahier des Charges</h3>
+          <div class="card-meta">9 pages â€¢ Document PDF</div>
+          <p class="card-desc">
+            Expression des besoins et spÃ©cifications fonctionnelles pour la modernisation du systÃ¨me d'information de gestion des frais de Galaxy Swiss Bourdin.
+          </p>
+        </div>
+        <div class="card-actions">
+          <a href="livrables/Cahier_des_charges_GSB.pdf" target="_blank" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>Consulter en ligne</span>
+          </a>
+          <a href="livrables/Cahier_des_charges_GSB.pdf" download class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>TÃ©lÃ©charger le PDF</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Section Informations Techniques & Ã‰valuation -->
+    <h2 class="section-title">
+      <span>ðŸ› ï¸ Informations Techniques & DÃ©ploiement</span>
+    </h2>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+          Architecture & Composants
+        </h3>
+        <ul class="info-list">
+          <li><span class="bullet">â€¢</span><span><strong>Framework :</strong> Symfony 2 (architecture structurÃ©e en Bundle <code>PgGsbFraisBundle</code>).</span></li>
+          <li><span class="bullet">â€¢</span><span><strong>Moteur de rendu :</strong> Twig avec templates hÃ©ritÃ©s et alertes dynamiques.</span></li>
+          <li><span class="bullet">â€¢</span><span><strong>Base de donnÃ©es :</strong> PostgreSQL hÃ©bergÃ©e sur le Cloud <strong>Supabase</strong> (connexion native via PDO <code>pgsql</code>).</span></li>
+          <li><span class="bullet">â€¢</span><span><strong>GÃ©nÃ©ration PDF :</strong> Service <code>PdfGsb</code> pour l'Ã©dition des fiches de frais validÃ©es.</span></li>
+          <li><span class="bullet">â€¢</span><span><strong>RÃ´les implÃ©mentÃ©s :</strong> Visiteur mÃ©dical, Comptable et Administrateur.</span></li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Comptes de Test (Ã‰valuation)
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+          Comptes prÃ©-configurÃ©s dans la base pour tester les diffÃ©rents profils et droits d'accÃ¨s :
+        </p>
+        <table class="credentials-table">
+          <thead>
+            <tr>
+              <th>RÃ´le</th>
+              <th>Identifiant</th>
+              <th>Mot de passe</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Visiteur</strong></td>
+              <td><code>dandre</code></td>
+              <td><code>oppg5</code></td>
+            </tr>
+            <tr>
+              <td><strong>Visiteur</strong></td>
+              <td><code>cbedos</code></td>
+              <td><code>gmhxd</code></td>
+            </tr>
+            <tr>
+              <td><strong>Comptable</strong></td>
+              <td><code>comptable1</code></td>
+              <td><code>comptable1</code></td>
+            </tr>
+            <tr>
+              <td><strong>Admin</strong></td>
+              <td><code>admin</code></td>
+              <td><code>admin123</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Pied de page -->
+  <footer>
+    <div class="container">
+      <p>GSB Frais â€¢ Projet BTS SIO SLAM 2 â€” RÃ©alisÃ© par <strong>ALEXANDRE Ewan</strong></p>
+      <p style="margin-top: 6px;"><a href="https://github.com/ealexandre18/GSB-Frais">â† Revenir au portfolio principal</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
+

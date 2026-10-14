@@ -1,0 +1,41 @@
+<h3>Fiche de frais du mois {{nummois}}-{{numannee}} : 
+    </h3>
+    <div class="encadre">
+    <p>
+        Etat : <strong>{{libetat}}</strong> depuis le {{datemodif}} <br> Montant validé : <strong>{{montantvalide}} €</strong>
+   </p>
+  	<table class="listeLegere">
+  	   <caption>Eléments forfaitisés </caption>
+        <tr>
+    {% for unfrais in  lesfraisforfait %}
+          {% set idfrais = unfrais.idfrais|trim %}
+          {% set libelle = unfrais.libelle %}
+		<th>
+            {% if idfrais == 'KM' %}
+                {{ libelle }} (km)
+            {% elseif idfrais == 'ETP' %}
+                {{ libelle }} (étapes)
+            {% elseif idfrais == 'NUI' %}
+                {{ libelle }} (nuits)
+            {% elseif idfrais == 'REP' %}
+                {{ libelle }} (repas)
+            {% else %}
+                {{ libelle }}
+            {% endif %}
+        </th>
+    {% endfor %}  
+	</tr>
+        <tr>
+    {% for unfrais in  lesfraisforfait %}
+	  {%   set quantite = unfrais.quantite %}
+	       <td class="qteForfait">{{quantite}} </td>
+    {% endfor %}  
+	</tr>
+    </table>
+    <p style="margin-top: 15px; margin-bottom: 10px;">
+        <a href="{{ path('pg_gsb_frais_genererpdf', {'mois': numannee ~ nummois}) }}" target="_blank" style="display: inline-block; padding: 6px 14px; background-color: #0055A5; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 12px;">
+            📄 Télécharger la fiche de remboursement (PDF Annexe 1)
+        </a>
+    </p>
+   </div>
+ 

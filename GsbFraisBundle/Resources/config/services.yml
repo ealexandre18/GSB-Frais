@@ -1,0 +1,9 @@
+parameters:
+    db.host: pgsql:host=db.vwjbahcpsxetfsmxmqur.supabase.co;port=5432
+    db.name: dbname=postgres
+    db.user: postgres
+    db.mdp: hunterxhunter04
+services:
+    pg_gsb_frais.pdo:
+        class: Pg\GsbFraisBundle\services\PdoGsb
+        arguments: ['%db.host%', '%db.name%', '%db.user%', '%db.mdp%']

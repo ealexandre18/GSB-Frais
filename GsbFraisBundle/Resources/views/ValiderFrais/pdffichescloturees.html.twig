@@ -1,0 +1,97 @@
+{% extends "PgGsbFraisBundle::accueil.html.twig" %}
+
+{% block bloc1 %}
+<div id="contenu">
+    <h2>Génération des PDF des fiches de frais</h2>
+
+    {% if message %}
+        <div style="padding: 10px 15px; margin-bottom: 15px; border-radius: 4px; font-weight: bold;
+            {% if messageType == 'success' %} background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+            {% elseif messageType == 'error' %} background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
+            {% elseif messageType == 'warning' %} background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba;
+            {% else %} background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; {% endif %}">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    <!-- 1. Formulaire de sélection du mois -->
+    <form action="{{ path('pg_gsb_frais_genererpdf_mois') }}" method="GET" style="margin-bottom: 25px;">
+        <input type="hidden" name="route" value="genererpdf_mois" />
+        <div class="corpsForm">
+            <fieldset>
+                <legend>Choisir le mois à consulter / exporter</legend>
+                <p>
+                    <label for="lstMois">Mois : </label>
+                    <select id="lstMois" name="mois" style="width: 200px; padding: 4px;" onchange="this.form.submit()">
+                        {% for unMois in lesmois %}
+                            <option value="{{ unMois.mois }}" {% if unMois.mois == lemois %}selected{% endif %}>
+                                {{ unMois.numMois }}/{{ unMois.numAnnee }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="Afficher" style="padding: 4px 10px; margin-left: 10px;" />
+                </p>
+            </fieldset>
+        </div>
+    </form>
+
+    <!-- 2. Actions & Tableau des fiches -->
+    {% if fiches|length > 0 %}
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">Fiches disponibles pour {{ lemois|slice(4,2) }}/{{ lemois|slice(0,4) }} ({{ fiches|length }} fiche(s))</h3>
+            
+            <a href="{{ path('pg_gsb_frais_genererpdf_mois', {'mois': lemois, 'telecharger': 1}) }}" 
+               style="display: inline-block; background-color: #28a745; color: white; padding: 10px 18px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                📥 Télécharger le PDF global (toutes les fiches)
+            </a>
+        </div>
+
+        <table class="listeLegere" style="width: 100%;">
+            <caption>Récapitulatif des fiches du mois {{ lemois|slice(4,2) }}/{{ lemois|slice(0,4) }}</caption>
+            <tr>
+                <th>Visiteur</th>
+                <th>Justificatifs</th>
+                <th>Montant validé</th>
+                <th>Dernière modif</th>
+                <th>État</th>
+                <th>Export individuel</th>
+            </tr>
+            {% for uneFiche in fiches %}
+                {% set idVis = uneFiche.idvisiteur %}
+                {% set montant = uneFiche.montantvalide|default('0.00') %}
+                {% set etat = uneFiche.idetat %}
+                {% set libEtat = uneFiche.libetat %}
+
+                <tr>
+                    <td><strong>{{ uneFiche.nom }}</strong> {{ uneFiche.prenom }} <small style="color: #666;">({{ idVis }})</small></td>
+                    <td style="text-align: center;">{{ uneFiche.nbjustificatifs|default(0) }}</td>
+                    <td style="font-weight: bold; color: #0055A5;">{{ montant }} €</td>
+                    <td>{{ uneFiche.datemodif|slice(0,10) }}</td>
+                    <td>
+                        {% if etat == 'VA' %}
+                            <span style="background-color: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 3px; font-weight: bold; font-size: 11px;">🟡 Validée</span>
+                        {% elseif etat == 'RB' %}
+                            <span style="background-color: #d4edda; color: #155724; padding: 2px 6px; border-radius: 3px; font-weight: bold; font-size: 11px;">🟢 Remboursée</span>
+                        {% elseif etat == 'CL' %}
+                            <span style="background-color: #e2e3e5; color: #383d41; padding: 2px 6px; border-radius: 3px; font-weight: bold; font-size: 11px;">⚪ Clôturée</span>
+                        {% else %}
+                            <span style="color: #666;">{{ libEtat }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">
+                        <a href="{{ path('pg_gsb_frais_genererpdf', {'idVisiteur': idVis, 'mois': lemois}) }}" target="_blank" 
+                           style="display: inline-block; padding: 4px 10px; background-color: #0055A5; color: white; border-radius: 3px; text-decoration: none; font-size: 11px; font-weight: bold;">
+                            📄 PDF individuel
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <div style="padding: 20px; background-color: #f8f9fa; border: 1px dashed #ccc; border-radius: 5px; text-align: center; color: #666; margin-top: 15px;">
+            <p style="font-size: 14px; margin: 0;">Aucune fiche clôturée, validée ou remboursée pour le mois sélectionné (<strong>{{ lemois|slice(4,2) }}/{{ lemois|slice(0,4) }}</strong>).</p>
+            <p style="font-size: 12px; margin-top: 8px; color: #888;">Choisissez un autre mois dans la liste ci-dessus.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "PgGsbFraisBundle::layout.html.twig" %}
+{% block menu %}
+<div id="menuGauche">
+     <div id="infosUtil">
+         <h3>
+            {% if app.session.get('nom') is not empty %}
+               {% if (app.session.get('role') == 'comptable') %}
+                  Comptable : {{ app.session.get('prenom') }} {{ app.session.get('nom') }}<br>
+               {% else %}
+                  Visiteur : {{ app.session.get('prenom') }} {{ app.session.get('nom') }}<br>
+               {% endif %}
+            {% endif %}
+        </h3>
+     </div>  
+        <ul id="menuList">
+          {% if (app.session.get('role') == 'comptable') %}
+            <li class="smenu">
+               <a href="{{ path('pg_gsb_frais_validerfrais') }}" title="Valider les fiches de frais">Valider fiches de frais</a>
+            </li>
+            <li class="smenu">
+               <a href="{{ path('pg_gsb_frais_suivipaiement') }}" title="Suivi paiement fiches de frais">Suivi paiement fiches</a>
+            </li>
+            <li class="smenu">
+               <a href="{{ path('pg_gsb_frais_genererpdf_mois') }}" title="Générer en PDF toutes les fiches clôturées ou validées par mois">PDF Fiches Clôturées</a>
+            </li>
+          {% else %}
+            <li class="smenu">
+               <a href="{{ path('pg_gsb_frais_saisirfrais') }}" title="Saisie fiche de frais">Saisie fiche de frais</a>
+            </li>
+            <li class="smenu">
+               <a href="{{ path('pg_gsb_frais_listefrais') }}" title="Consultation de mes fiches de frais">Mes fiches de frais</a>
+            </li>
+          {% endif %}
+            <li class="smenu">
+               <a href="{{ path('pg_gsb_frais_deconnexion') }}" title="Se déconnecter">Déconnexion</a>
+            </li>
+         </ul>
+     </div> 
+{% endblock %}
+
+{% block bloc1 %}
+<div id="contenu">
+    <h2>Bienvenue sur l'intranet GSB</h2>
+    {% if app.session.get('role') == 'comptable' %}
+        <p style="font-size: 14px; margin-top: 15px;">
+            Vous êtes connecté avec le profil <strong>Comptable</strong> ({{ app.session.get('prenom') }} {{ app.session.get('nom') }}).
+        </p>
+        <p style="margin-top: 10px;">
+            Utilisez le menu de gauche pour :
+        </p>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+            <li><strong><a href="{{ path('pg_gsb_frais_validerfrais') }}">Valider fiches de frais</a></strong> : Vérifier, modifier, refuser/reporter des hors forfait et valider les fiches des visiteurs médicaux.</li>
+            <li><strong><a href="{{ path('pg_gsb_frais_suivipaiement') }}">Suivi paiement fiches</a></strong> : Suivre les fiches validées et enregistrer leur mise en paiement / remboursement.</li>
+            <li><strong><a href="{{ path('pg_gsb_frais_genererpdf_mois') }}">PDF Fiches Clôturées</a></strong> : Consulter et exporter en PDF le récapitulatif global des fiches par mois.</li>
+        </ul>
+    {% else %}
+        <p style="font-size: 14px; margin-top: 15px;">
+            Vous êtes connecté avec le profil <strong>Visiteur médical</strong> ({{ app.session.get('prenom') }} {{ app.session.get('nom') }}).
+        </p>
+        <p style="margin-top: 10px;">
+            Utilisez le menu de gauche pour :
+        </p>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+            <li><strong><a href="{{ path('pg_gsb_frais_saisirfrais') }}">Saisie fiche de frais</a></strong> : Renseigner vos frais forfaitisés et hors forfait pour le mois en cours.</li>
+            <li><strong><a href="{{ path('pg_gsb_frais_listefrais') }}">Mes fiches de frais</a></strong> : Consulter l'état de vos remboursements et télécharger votre fiche en PDF.</li>
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

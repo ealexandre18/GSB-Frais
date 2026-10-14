@@ -1,0 +1,40 @@
+<div id="contenu">
+      <h2>Renseigner ma fiche de frais du mois {{nummois}}-{{numannee}}</h2>
+      <form action="{{path('pg_gsb_frais_saisirfrais')}}" method="POST">
+          <div class="corpsForm">
+              <fieldset>
+                <legend>Eléments forfaitisés</legend>
+                     {% for unfrais in lesfraisforfait %}
+                         {% set idfrais = unfrais.idfrais|trim %}
+                         {% set libelle = unfrais.libelle %}
+                         {% set quantite = unfrais.quantite %}
+                         <p>
+                             <label for="idFrais_{{ idfrais }}">
+                                 {% if idfrais == 'KM' %}
+                                     Frais Kilométrique (en km)
+                                     {% if unVehicule is defined and unVehicule %}
+                                         <small style="color: #0055A5;">({{ unVehicule.carburant }} {{ unVehicule.puissance }} - {{ unVehicule.montant_km }} €/km)</small>
+                                     {% endif %}
+                                 {% elseif idfrais == 'ETP' %}
+                                     Forfait Étape (nombre de soirées étapes)
+                                 {% elseif idfrais == 'NUI' %}
+                                     Nuitée Hôtel (nombre de nuits)
+                                 {% elseif idfrais == 'REP' %}
+                                     Repas Restaurant (nombre de repas)
+                                 {% else %}
+                                     {{ libelle }} (quantité)
+                                 {% endif %}
+                             </label>
+                             <input type="text" id="idFrais_{{ idfrais }}" name="lesFrais[{{ idfrais }}]" size="10" maxlength="5" value="{{ quantite }}">
+                         </p>
+                     {% endfor %}
+              </fieldset>
+          </div>
+          <div class="piedForm">
+          <p>
+            <input id="ok" type="submit" value="Valider" size="20" />
+            <input id="annuler" type="reset" value="Effacer" size="20" />
+          </p> 
+          </div>
+      </form>
+</div>

@@ -1,0 +1,103 @@
+{% extends "PgGsbFraisBundle::layout.html.twig" %}
+
+{% block menu %}
+<div id="menuGauche">
+    <div id="infosUtil">
+        <h3>
+            Administrateur :<br>
+            {{ app.session.get('prenom') }} {{ app.session.get('nom') }}
+        </h3>
+    </div>  
+    <ul id="menuList">
+        <li class="smenu">
+            <a href="{{ path('pg_gsb_frais_admin') }}" title="Gestion des comptes">Gestion Utilisateurs & Comptables</a>
+        </li>
+        <li class="smenu">
+            <a href="{{ path('pg_gsb_frais_creercompte') }}" title="Créer un nouveau compte utilisateur">Créer un compte</a>
+        </li>
+        <li class="smenu">
+            <a href="{{ path('pg_gsb_frais_deconnexion') }}" title="Se déconnecter">Déconnexion</a>
+        </li>
+    </ul>
+</div> 
+{% endblock %}
+
+{% block bloc1 %}
+<div id="contenu" style="padding: 20px 30px; font-family: Arial, Helvetica, sans-serif;">
+    <h2 style="color: #0055a5; border-bottom: 2px solid #0055a5; padding-bottom: 8px; margin-top: 0;">
+        Administration - Modifier le compte : {{ utilisateur.prenom }} {{ utilisateur.nom }}
+    </h2>
+
+    {% if message %}
+        <div style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 12px 18px; border-radius: 4px; margin-bottom: 20px; font-weight: bold;">
+            ✓ {{ message }}
+            <div style="margin-top: 8px;">
+                <a href="{{ path('pg_gsb_frais_admin') }}" style="color: #0055a5; text-decoration: underline; font-size: 13px;">➔ Retourner à la liste des utilisateurs</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <div style="background: white; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 25px; max-width: 750px;">
+        <form method="POST" action="{{ path('pg_gsb_frais_modifiercompte', {'type': type, 'id': utilisateur.id}) }}">
+            
+            <fieldset style="border: 1px solid #ddd; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px;">
+                <legend style="color: #333; font-weight: bold; padding: 0 8px;">Identité & Connexion ({{ type|capitalize }})</legend>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Nom *</label>
+                        <input type="text" name="nom" value="{{ utilisateur.nom }}" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Prénom *</label>
+                        <input type="text" name="prenom" value="{{ utilisateur.prenom }}" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Login de connexion *</label>
+                    <input type="text" name="login" value="{{ utilisateur.login }}" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+            </fieldset>
+
+            {% if type == 'visiteur' %}
+            <fieldset style="border: 1px solid #ddd; padding: 15px 20px; border-radius: 5px; margin-bottom: 25px;">
+                <legend style="color: #333; font-weight: bold; padding: 0 8px;">Coordonnées & Barème Véhicule</legend>
+                
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Adresse</label>
+                    <input type="text" name="adresse" value="{{ utilisateur.adresse }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Code Postal</label>
+                        <input type="text" name="cp" value="{{ utilisateur.cp }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Ville</label>
+                        <input type="text" name="ville" value="{{ utilisateur.ville }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #444;">Véhicule de fonction & Barème kilométrique</label>
+                    <select name="id_vehicule" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                        <option value="1" {% if utilisateur.id_vehicule == 1 %}selected{% endif %}>Véhicule 4CV Diesel (0.52 € / km)</option>
+                        <option value="2" {% if utilisateur.id_vehicule == 2 %}selected{% endif %}>Véhicule 5/6CV Diesel (0.58 € / km)</option>
+                        <option value="3" {% if utilisateur.id_vehicule == 3 or not utilisateur.id_vehicule %}selected{% endif %}>Véhicule 4CV Essence (0.62 € / km)</option>
+                        <option value="4" {% if utilisateur.id_vehicule == 4 %}selected{% endif %}>Véhicule 5/6CV Essence (0.67 € / km)</option>
+                    </select>
+                </div>
+            </fieldset>
+            {% endif %}
+
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <input type="submit" value="Enregistrer les modifications" style="background-color: #0055a5; color: white; border: none; padding: 10px 22px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                <a href="{{ path('pg_gsb_frais_admin') }}" style="color: #666; text-decoration: none; font-size: 14px;">Annuler</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}
